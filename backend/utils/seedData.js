@@ -7,14 +7,25 @@ const User = require('../models/User');
 const Meal = require('../models/Meal');
 const Store = require('../models/Store');
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// Connect to MongoDB with error handling
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ Connected to MongoDB for seeding');
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error);
+    process.exit(1);
+  }
+};
 
 const seedData = async () => {
   try {
+    // Connect to database first
+    await connectDB();
+    
     console.log('🌱 Starting database seeding...');
 
     // Clear existing data

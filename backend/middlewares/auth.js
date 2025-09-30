@@ -69,7 +69,10 @@ const optionalAuth = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
+      const user = await User.findById(decoded.id).select('-password');
+      if (user && user.isActive) {
+        req.user = user;
+      }
     } catch (error) {
       // Token invalid, but continue without user
       req.user = null;

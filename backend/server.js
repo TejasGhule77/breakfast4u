@@ -4,7 +4,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
+
+// Import database connection
+const connectDB = require('./config/database');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -20,6 +24,9 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
+// Connect to MongoDB
+connectDB();
+
 // Security middleware
 app.use(helmet());
 app.use(compression());
@@ -28,7 +35,10 @@ app.use(compression());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  }
 });
 app.use('/api/', limiter);
 
@@ -43,14 +53,6 @@ app.use(cors(corsOptions));
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB Atlas'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -67,7 +69,8 @@ app.get('/api/health', (req, res) => {
     success: true,
     message: 'Breakfast4U API is running!',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    version: '1.0.0'
   });
 });
 
@@ -84,8 +87,16 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+  console.log('❌ Unhandled Promise Rejection:', err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
 
 module.exports = app;
