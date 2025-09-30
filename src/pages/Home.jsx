@@ -165,11 +165,27 @@ const Home = () => {
                 Discover perfect breakfast and snacks for your cravings. 
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <button className="bg-orange-500 text-white px-8 py-4 rounded-full font-medium hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button 
+                  onClick={() => {
+                    const perfectSection = document.getElementById('perfect-timing-section');
+                    if (perfectSection) {
+                      perfectSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="bg-orange-500 text-white px-8 py-4 rounded-full font-medium hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center space-x-2"
+                >
                   <span>Find My Perfect Meal</span>
                   <ArrowRight className="h-5 w-5" />
                 </button>
-                <button className="border border-gray-300 text-gray-700 px-8 py-4 rounded-full font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button 
+                  onClick={() => {
+                    const storesSection = document.getElementById('stores-near-you-section');
+                    if (storesSection) {
+                      storesSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="border border-gray-300 text-gray-700 px-8 py-4 rounded-full font-medium hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center space-x-2"
+                >
                   <MapPin className="h-5 w-5" />
                   <span>Explore Nearby Stores</span>
                 </button>
@@ -206,7 +222,7 @@ const Home = () => {
       </section>
 
       {/* Perfect Timing Section */}
-      <section className="py-16 bg-white">
+      <section id="perfect-timing-section" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             What's Perfect for <span className="text-orange-500">{activeTime.toLowerCase()}</span>?
@@ -256,7 +272,7 @@ const Home = () => {
       </section>
 
       {/* Stores Near You */}
-      <section className="py-16 bg-gray-50">
+      <section id="stores-near-you-section" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Stores Near <span className="text-orange-500">You</span>

@@ -17,13 +17,33 @@ const Register = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       console.log('Registration data:', { ...data, userType });
-      alert(`Registration successful! Welcome ${data.name}`);
+      
+      // Create user object
+      const newUser = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        role: userType,
+        businessName: data.businessName,
+        address: data.address
+      };
+      
+      // Store user info in localStorage
+      localStorage.setItem('user', JSON.stringify(newUser));
+      localStorage.setItem('token', 'mock-jwt-token-' + userType);
+      
+      alert(`Registration successful! Welcome ${data.name}!`);
       navigate('/signin');
+    } catch (error) {
+      alert('Registration failed. Please try again.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

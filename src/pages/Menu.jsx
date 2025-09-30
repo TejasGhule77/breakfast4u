@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Search, Star, Heart, ShoppingCart } from 'lucide-react';
 
 const Menu = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedTime, setSelectedTime] = useState('Any Time');
@@ -326,6 +328,7 @@ const Menu = () => {
                 </div>
 
                 <button className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center space-x-2">
+                  onClick={() => navigate('/stores')}
                   <ShoppingCart className="h-4 w-4" />
                   <span>Show Stores</span>
                 </button>

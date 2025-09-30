@@ -13,31 +13,41 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      // Mock authentication logic
+    try {
+      // Mock authentication logic with more users
       const mockUsers = [
-        { email: 'user@example.com', password: 'password', role: 'user' },
-        { email: 'owner@example.com', password: 'password', role: 'owner' }
+        { email: 'user@example.com', password: 'password', role: 'user', name: 'John Doe' },
+        { email: 'owner@example.com', password: 'password', role: 'owner', name: 'Store Owner' },
+        { email: 'admin@breakfast4u.com', password: 'admin123', role: 'admin', name: 'Admin User' },
+        { email: 'shraddha@example.com', password: 'password123', role: 'owner', name: 'Shraddha Owner' },
+        { email: 'john@example.com', password: 'password123', role: 'user', name: 'John Customer' }
       ];
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       const user = mockUsers.find(u => u.email === data.email && u.password === data.password);
       
       if (user) {
         // Store user info in localStorage (in real app, use proper auth)
         localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', 'mock-jwt-token-' + user.role);
         
         if (user.role === 'owner') {
           navigate('/owner-dashboard');
+        } else if (user.role === 'admin') {
+          navigate('/admin-dashboard');
         } else {
           navigate('/');
         }
       } else {
-        alert('Invalid credentials');
+        alert('Invalid credentials. Try:\nUser: user@example.com / password\nOwner: owner@example.com / password\nAdmin: admin@breakfast4u.com / admin123');
       }
-      
+    } catch (error) {
+      alert('Login failed. Please try again.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

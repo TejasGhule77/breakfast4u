@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Clock, Star, Phone, Filter, InspectionPanel as Directions } from 'lucide-react';
 
 const Stores = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('All Areas');
   const [selectedDistance, setSelectedDistance] = useState('All Places');
@@ -254,6 +256,7 @@ const Stores = () => {
 
                   <div className="flex space-x-3">
                     <button className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors duration-200">
+                      onClick={() => navigate('/menu')}
                       View Menu
                     </button>
                     <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-1">

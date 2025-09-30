@@ -10,8 +10,18 @@ import Contact from './pages/Contact';
 import SignIn from './pages/SignIn';
 import Register from './pages/Register';
 import OwnerDashboard from './pages/OwnerDashboard';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">

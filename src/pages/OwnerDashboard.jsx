@@ -1,13 +1,34 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Plus, CreditCard as Edit, Trash2, Clock, Star, DollarSign, Image, Save, X } from 'lucide-react';
 
 const OwnerDashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('morning');
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [user, setUser] = useState(null);
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      navigate('/signin');
+      return;
+    }
+    
+    const parsedUser = JSON.parse(userData);
+    if (parsedUser.role !== 'owner') {
+      alert('Access denied. Owner account required.');
+      navigate('/');
+      return;
+    }
+    
+    setUser(parsedUser);
+  }, [navigate]);
 
   // Mock data for breakfast items
   const [breakfastItems, setBreakfastItems] = useState({
@@ -121,6 +142,17 @@ const OwnerDashboard = () => {
     reset();
   };
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -134,12 +166,13 @@ const OwnerDashboard = () => {
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm text-gray-600">Welcome back,</p>
-                <p className="font-semibold text-gray-900">Green Café Owner</p>
+                <p className="font-semibold text-gray-900">{user?.name || 'Store Owner'}</p>
               </div>
               <button
                 onClick={() => {
                   localStorage.removeItem('user');
-                  window.location.href = '/';
+                  localStorage.removeItem('token');
+                  navigate('/');
                 }}
                 className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
