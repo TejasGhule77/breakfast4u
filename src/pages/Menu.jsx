@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Search, Star, Heart, ShoppingCart } from 'lucide-react';
@@ -9,6 +10,16 @@ const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedTime, setSelectedTime] = useState('Any Time');
   const [sortBy, setSortBy] = useState('Highest Rated');
+  const [storeFilter, setStoreFilter] = useState('');
+
+  // Get store from URL params on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const store = urlParams.get('store');
+    if (store) {
+      setStoreFilter(store);
+    }
+  }, []);
 
   const categories = [
   'All Categories',
@@ -36,7 +47,8 @@ const Menu = () => {
   reviews: 210,
   tags: ['Vegan'],
   category: 'Snacks',
-  time: 10
+  time: 10,
+  availableAt: ['Shraddha Snack Centre', 'Prakash Snacks']
 },
 {
   id: 2,
@@ -48,7 +60,8 @@ const Menu = () => {
   reviews: 340,
   tags: ['Vegetarian'],
   category: 'Street Food',
-  time: 20
+  time: 20,
+  availableAt: ['Tuljai Snacks', 'Prakash Snacks']
 },
 {
   id: 3,
@@ -60,7 +73,8 @@ const Menu = () => {
   reviews: 180,
   tags: ['Vegetarian', 'Gluten-Free'],
   category: 'South Indian',
-  time: 12
+  time: 12,
+  availableAt: ['Shraddha Snack Centre']
 },
 {
   id: 4,
@@ -72,7 +86,8 @@ const Menu = () => {
   reviews: 260,
   tags: ['Vegetarian'],
   category: 'South Indian',
-  time: 18
+  time: 18,
+  availableAt: ['Shraddha Snack Centre']
 },
 {
   id: 5,
@@ -84,7 +99,8 @@ const Menu = () => {
   reviews: 220,
   tags: ['Vegetarian'],
   category: 'Maharashtrian',
-  time: 20
+  time: 20,
+  availableAt: ['Tuljai Snacks']
 },
 {
   id: 6,
@@ -96,7 +112,8 @@ const Menu = () => {
   reviews: 300,
   tags: ['Vegetarian'],
   category: 'Snacks',
-  time: 8
+  time: 8,
+  availableAt: ['Prakash Snacks', 'Shraddha Snack Centre']
 },
 {
   id: 7,
@@ -108,7 +125,8 @@ const Menu = () => {
   reviews: 140,
   tags: ['Vegan', 'Healthy'],
   category: 'Chaats',
-  time: 12
+  time: 12,
+  availableAt: ['Mugdha Snacks']
 },
 {
   id: 8,
@@ -120,7 +138,8 @@ const Menu = () => {
   reviews: 500,
   tags: ['Vegetarian', 'Gluten-Free'],
   category: 'Beverages',
-  time: 7
+  time: 7,
+  availableAt: ['Shraddha Snack Centre', 'Prakash Snacks', 'Tuljai Snacks']
 },
 {
   id: 9,
@@ -132,7 +151,8 @@ const Menu = () => {
   reviews: 400,
   tags: ['Vegetarian'],
   category: 'Street Food',
-  time: 10
+  time: 10,
+  availableAt: ['Prakash Snacks', 'Tuljai Snacks']
 },
 {
   id: 10,
@@ -144,7 +164,8 @@ const Menu = () => {
   reviews: 350,
   tags: ['Vegetarian'],
   category: 'Beverages',
-  time: 5
+  time: 5,
+  availableAt: ['Shraddha Snack Centre', 'Anil snacks']
 },
 {
   id: 11,
@@ -156,7 +177,8 @@ const Menu = () => {
   reviews: 230,
   tags: ['Vegetarian'],
   category: 'Beverages',
-  time: 8
+  time: 8,
+  availableAt: ['Anil snacks']
 },
 {
   id: 12,
@@ -168,7 +190,8 @@ const Menu = () => {
   reviews: 190,
   tags: ['Protein-Rich'],
   category: 'Breakfast',
-  time: 10
+  time: 10,
+  availableAt: ['Shraddha Snack Centre']
 },
 {
   id: 13,
@@ -180,7 +203,8 @@ const Menu = () => {
   reviews: 160,
   tags: ['Vegetarian'],
   category: 'Maharashtrian',
-  time: 12
+  time: 12,
+  availableAt: ['Tuljai Snacks']
 },
 {
   id: 14,
@@ -192,7 +216,8 @@ const Menu = () => {
   reviews: 150,
   tags: ['Vegetarian'],
   category: 'South Indian',
-  time: 15
+  time: 15,
+  availableAt: ['Shraddha Snack Centre']
 }
 
   ];
@@ -201,7 +226,8 @@ const Menu = () => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All Categories' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesStore = !storeFilter || item.availableAt?.includes(storeFilter);
+    return matchesSearch && matchesCategory && matchesStore;
   });
 
   return (
@@ -211,10 +237,26 @@ const Menu = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Our <span className="text-orange-500">Menu</span>
+            {storeFilter && (
+              <span className="text-lg font-normal text-gray-600 block mt-2">
+                Menu from: <span className="text-orange-500 font-semibold">{storeFilter}</span>
+              </span>
+            )}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Discover our carefully curated selection of breakfast favorites and healthy snacks
           </p>
+          {storeFilter && (
+            <button
+              onClick={() => {
+                setStoreFilter('');
+                window.history.pushState({}, '', '/menu');
+              }}
+              className="mt-4 text-orange-500 hover:text-orange-600 underline"
+            >
+              Clear filter and show all menu items
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -328,7 +370,7 @@ const Menu = () => {
                 </div>
 
                 <button className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center space-x-2">
-                  onClick={() => navigate('/stores')}
+                  onClick={() => navigate(`/stores?category=${item.category}`)}
                   <ShoppingCart className="h-4 w-4" />
                   <span>Show Stores</span>
                 </button>

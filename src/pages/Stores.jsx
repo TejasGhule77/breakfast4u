@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, MapPin, Clock, Star, Phone, Filter, InspectionPanel as Directions } from 'lucide-react';
 
 const Stores = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('All Areas');
   const [selectedDistance, setSelectedDistance] = useState('All Places');
   const [isOpenNow, setIsOpenNow] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState('');
+
+  // Get category from URL params on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const category = urlParams.get('category');
+    if (category) {
+      setCategoryFilter(category);
+    }
+  }, [location.search]);
 
   const areas = ['All Areas', 'Sakhrale', 'Takari', 'Islampur', 'Walwa'];
   const distances = ['All Places', 'Within 1 mile', 'Within 3 miles', 'Within 5 miles'];
@@ -99,8 +111,11 @@ const Stores = () => {
                          );
     const matchesArea = selectedArea === 'All Areas' || store.area === selectedArea;
     const matchesStatus = !isOpenNow || store.status === 'Open';
+    const matchesCategory = !categoryFilter || store.specialties.some(specialty => 
+      specialty.toLowerCase().includes(categoryFilter.toLowerCase())
+    );
     
-    return matchesSearch && matchesArea && matchesStatus;
+    return matchesSearch && matchesArea && matchesStatus && matchesCategory;
   });
 
   return (
@@ -110,10 +125,26 @@ const Stores = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Find <span className="text-orange-500">Stores</span>
+            {categoryFilter && (
+              <span className="text-lg font-normal text-gray-600 block mt-2">
+                Showing stores for: <span className="text-orange-500 font-semibold">{categoryFilter}</span>
+              </span>
+            )}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Discover breakfast4U partner locations near you with real-time availability
           </p>
+          {categoryFilter && (
+            <button
+              onClick={() => {
+                setCategoryFilter('');
+                navigate('/stores');
+              }}
+              className="mt-4 text-orange-500 hover:text-orange-600 underline"
+            >
+              Clear filter and show all stores
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -256,7 +287,7 @@ const Stores = () => {
 
                   <div className="flex space-x-3">
                     <button className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors duration-200">
-                      onClick={() => navigate('/menu')}
+                      onClick={() => navigate(`/menu?store=${store.name}`)}
                       View Menu
                     </button>
                     <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-1">
