@@ -369,6 +369,7 @@ const Menu = () => {
                   ))}
                 </div>
 
+                  onClick={() => navigate(`/stores?category=${item.category}`)}
                 <button className="w-full bg-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors duration-200 flex items-center justify-center space-x-2">
                   onClick={() => navigate(`/stores?category=${item.category}`)}
                   <ShoppingCart className="h-4 w-4" />
