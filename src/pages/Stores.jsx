@@ -111,9 +111,16 @@ const Stores = () => {
                          );
     const matchesArea = selectedArea === 'All Areas' || store.area === selectedArea;
     const matchesStatus = !isOpenNow || store.status === 'Open';
-    const matchesCategory = !categoryFilter || store.specialties.some(specialty => 
-      specialty.toLowerCase().includes(categoryFilter.toLowerCase())
-    );
+    const matchesCategory = !categoryFilter || 
+      store.specialties.some(specialty => 
+        specialty.toLowerCase().includes(categoryFilter.toLowerCase())
+      ) ||
+      // Also match by category mapping
+      (categoryFilter === 'South Indian' && store.specialties.some(s => s.includes('South Indian'))) ||
+      (categoryFilter === 'Street Food' && store.specialties.some(s => s.includes('Fast Food') || s.includes('Vadapav'))) ||
+      (categoryFilter === 'Maharashtrian' && store.specialties.some(s => s.includes('Kolhapuri Misal') || s.includes('Poha'))) ||
+      (categoryFilter === 'Snacks' && store.specialties.some(s => s.includes('Beverages') || s.includes('Fast Food'))) ||
+      (categoryFilter === 'Beverages' && store.specialties.some(s => s.includes('Beverages')));
     
     return matchesSearch && matchesArea && matchesStatus && matchesCategory;
   });
@@ -286,10 +293,8 @@ const Stores = () => {
                   </div>
 
                   <div className="flex space-x-3">
-                    <button 
-                      className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors duration-200"
+                    <button className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors duration-200">
                       onClick={() => navigate(`/menu?store=${store.name}`)}
-                    >
                       View Menu
                     </button>
                     <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-1">
